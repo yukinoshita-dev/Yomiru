@@ -4,7 +4,7 @@
 
 - [x] T-001 プロジェクト初期化（Next.js 15 + Bun + Tailwind v4） — Bun 前提の Next.js / TypeScript / Tailwind / Vitest 基盤を作成
 - [x] T-002 ドキュメント雛形（AGENTS / CLAUDE / spec / README / Tasks） — プロジェクト指示、仕様、README、タスク一覧を整備
-- [ ] T-003 ディレクトリ骨格と型定義 — `src` 配下の責務別ディレクトリと主要データ型を追加
+- [x] T-003 ディレクトリ骨格と型定義 — `src` 配下の責務別ディレクトリと主要データ型を追加
 - [ ] T-004 Dexie導入とリポジトリ層 — IndexedDB スキーマと CRUD リポジトリを実装
 - [ ] T-005 設定ストア（zustand + Dexie同期） — アプリ設定を zustand と Dexie で同期保存
 - [ ] T-006 文節分割エンジン（純関数） — 句読点と改行ベースの文節分割ロジックを実装
