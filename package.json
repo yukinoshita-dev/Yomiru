@@ -12,6 +12,7 @@
     "test:run": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "dexie": "^4.4.2",
     "next": "15",
     "react": "19",
     "react-dom": "19"
@@ -27,6 +28,7 @@
     "@vitejs/plugin-react": "^6",
     "eslint": "^9",
     "eslint-config-next": "15",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^29",
     "postcss": "^8",
     "tailwindcss": "^4",
