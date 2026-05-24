@@ -3,6 +3,8 @@ import './globals.css';
 
 export const viewport: Viewport = {
   themeColor: '#111111',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export const metadata: Metadata = {
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
   title: 'Yomiru',
   description: '文節ごとに読書を進めるPWAリーダーアプリ',
   manifest: '/manifest.json',
+  robots: { index: true, follow: true },
+  keywords: ['電子書籍', 'リーダー', '青空文庫', 'PWA', '文節読み'],
   openGraph: {
     type: 'website',
     url: 'https://yomiru.vercel.app',
