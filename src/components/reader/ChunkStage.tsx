@@ -14,7 +14,7 @@ interface ChunkStageProps {
 const THEME_STYLES: Record<Theme, { bg: string; fg: string }> = {
   light: { bg: "#fafaf7", fg: "#1a1a1a" },
   dark:  { bg: "#0d0d0d", fg: "#e6e6e6" },
-  lamp:  { bg: "#0a0000", fg: "#ff3a3a" },
+  lamp:  { bg: "#1a1208", fg: "#e8c891" },
 };
 
 export function ChunkStage({ chunk, fadeMs, fontSize, theme }: ChunkStageProps) {
@@ -38,17 +38,18 @@ export function ChunkStage({ chunk, fadeMs, fontSize, theme }: ChunkStageProps) 
             exit={{ opacity: 0 }}
             transition={{ duration: fadeSec }}
             style={{
-              fontSize: `clamp(28px, ${fontSize}px, 8vw)`,
+              writingMode: "vertical-rl",
+              fontSize: `clamp(28px, ${fontSize}px, 8vh)`,
               lineHeight: 1.6,
               letterSpacing: "0.04em",
-              maxWidth: "80vw",
+              maxHeight: "80vh",
               textAlign: "center",
-              paddingTop: "20vh",
-              paddingBottom: "20vh",
+              paddingLeft: "8vw",
+              paddingRight: "8vw",
             }}
           >
             {chunk.ruby && chunk.ruby.length > 0 ? (
-              <RubyText tokens={chunk.ruby} />
+              <RubyText text={chunk.text} tokens={chunk.ruby} />
             ) : (
               chunk.text
             )}

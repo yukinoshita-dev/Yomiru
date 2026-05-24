@@ -32,6 +32,7 @@
 - [x] T-028 Vercelデプロイ設定 — Vercel 手順、Build/Install Command、README 欄を整備
 - [x] T-029 Obsidian Vault連携 — Vault 側メモ、ADR、調査メモ、MOC 参照を作成
 - [x] T-030 最終仕上げ・READMEブラッシュ — 第三者に見せられる README とスクショ導線へ仕上げ
+- [x] T-031 リーダー表示改善（lamp色見直し・縦書き・ルビ表示バグ修正） — lampをろうそく色化、リーダー画面常時縦書き、RubyTextが親文字しか出ない不具合を修正
 
 ## コミットメッセージ運用
 
