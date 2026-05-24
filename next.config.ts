@@ -11,4 +11,11 @@ export default withPWA({
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
+  workboxOptions: {
+    additionalManifestEntries: [
+      { url: '/samples/rashomon-akutagawa.aozora.txt', revision: null },
+      { url: '/samples/chumon-miyazawa.aozora.txt', revision: null },
+      { url: '/samples/kokoro-soseki.aozora.txt', revision: null },
+    ],
+  },
 })(nextConfig);
