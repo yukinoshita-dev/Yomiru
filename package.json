@@ -13,9 +13,11 @@
   },
   "dependencies": {
     "dexie": "^4.4.2",
+    "jszip": "^3.10.1",
     "next": "15",
     "react": "19",
     "react-dom": "19",
+    "sonner": "^2.0.7",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
