@@ -73,6 +73,18 @@ Yomiru は、電子書籍を文節ごとに1チャンクずつ画面中央へ表
 - push 禁止
 - npm scripts ではなく `bun run ...` を使う
 
+## Codex 実行環境の制約（重要）
+
+このプロジェクトは Windows の Codex sandbox 環境で実行されます。
+以下のルールを **必ず守ること**:
+
+- **PowerShell / cmd は使用禁止** — サンドボックスが `Get-Content` 等を exit -1 でブロックする
+- **ファイル読み取り**: `node_repl/js` ツールで `fs.readFileSync('F:/Hobby/Book/src/...', 'utf8')` を使う
+- **ファイル書き込み**: `node_repl/js` ツールで `fs.writeFileSync(...)` を使う
+- **コマンド実行**: `node_repl/js` で `child_process.execSync('bun run test:run', { cwd: 'F:/Hobby/Book', encoding: 'utf8' })` を使う
+- **Git 操作**: Git MCP ツール（`mcp__git__*`）を使う
+- `exec` / `shell` / `powershell` / `cmd` ツールは呼び出さない
+
 ## 重要ファイル
 
 | ファイル | 役割 |
