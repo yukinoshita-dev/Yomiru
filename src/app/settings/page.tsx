@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
 import { Button } from "@/components/ui/Button";
+import { Slider } from "@/components/ui/Slider";
+import { Switch } from "@/components/ui/Switch";
 import { useSettingsStore } from "@/features/settings/store";
 import { useHydrateSettings } from "@/features/settings/useSettings";
 import { db } from "@/lib/db/database";
@@ -39,38 +41,38 @@ export default function SettingsPage() {
         {/* Speed */}
         <section className="bg-zinc-800 rounded-xl p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">再生</h2>
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-300 text-sm">速度: {settings.displayDuration.toFixed(1)} 秒/文節</span>
-            <input
-              type="range" min={0.5} max={10} step={0.1}
-              value={settings.displayDuration}
-              onChange={(e) => update({ displayDuration: parseFloat(e.target.value) })}
-              className="w-full accent-indigo-500"
-            />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-300 text-sm">フェード: {settings.fadeMs} ms</span>
-            <input
-              type="range" min={100} max={600} step={50}
-              value={settings.fadeMs}
-              onChange={(e) => update({ fadeMs: parseInt(e.target.value) })}
-              className="w-full accent-indigo-500"
-            />
-          </label>
+          <Slider
+            label="速度"
+            value={settings.displayDuration}
+            min={0.5}
+            max={10}
+            step={0.1}
+            displayValue={`${settings.displayDuration.toFixed(1)}秒/文節`}
+            onChange={(v) => update({ displayDuration: v })}
+          />
+          <Slider
+            label="フェード"
+            value={settings.fadeMs}
+            min={100}
+            max={600}
+            step={50}
+            displayValue={`${settings.fadeMs}ms`}
+            onChange={(v) => update({ fadeMs: v })}
+          />
         </section>
 
         {/* Display */}
         <section className="bg-zinc-800 rounded-xl p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">表示</h2>
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-300 text-sm">文字サイズ: {settings.fontSize} px</span>
-            <input
-              type="range" min={24} max={80} step={1}
-              value={settings.fontSize}
-              onChange={(e) => update({ fontSize: parseInt(e.target.value) })}
-              className="w-full accent-indigo-500"
-            />
-          </label>
+          <Slider
+            label="文字サイズ"
+            value={settings.fontSize}
+            min={24}
+            max={80}
+            step={1}
+            displayValue={`${settings.fontSize}px`}
+            onChange={(v) => update({ fontSize: v })}
+          />
           <div className="flex flex-col gap-1">
             <span className="text-zinc-300 text-sm">テーマ</span>
             <div className="flex gap-2">
@@ -94,25 +96,21 @@ export default function SettingsPage() {
         {/* Sleep mode */}
         <section className="bg-zinc-800 rounded-xl p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">睡眠モード</h2>
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={settings.sleepMode}
-              onChange={(e) => update({ sleepMode: e.target.checked })}
-              className="accent-indigo-500 w-4 h-4"
-            />
-            <span className="text-zinc-300 text-sm">有効にする</span>
-          </label>
+          <Switch
+            label="有効にする"
+            checked={settings.sleepMode}
+            onChange={(v) => update({ sleepMode: v })}
+          />
           {settings.sleepMode && (
-            <label className="flex flex-col gap-1">
-              <span className="text-zinc-300 text-sm">減速時間: {settings.sleepRampMinutes} 分</span>
-              <input
-                type="range" min={1} max={30} step={1}
-                value={settings.sleepRampMinutes}
-                onChange={(e) => update({ sleepRampMinutes: parseInt(e.target.value) })}
-                className="w-full accent-indigo-500"
-              />
-            </label>
+            <Slider
+              label="減速時間"
+              value={settings.sleepRampMinutes}
+              min={1}
+              max={30}
+              step={1}
+              displayValue={`${settings.sleepRampMinutes}分`}
+              onChange={(v) => update({ sleepRampMinutes: v })}
+            />
           )}
         </section>
 

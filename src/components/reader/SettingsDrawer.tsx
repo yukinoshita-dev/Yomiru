@@ -1,6 +1,8 @@
 "use client";
 
 import type { AppSettings } from "@/types";
+import { Slider } from "@/components/ui/Slider";
+import { Switch } from "@/components/ui/Switch";
 
 interface SettingsDrawerProps {
   settings: AppSettings;
@@ -15,25 +17,25 @@ export function SettingsDrawer({ settings, onUpdate, onClose }: SettingsDrawerPr
       <div className="relative w-full bg-zinc-900 rounded-t-2xl p-6 flex flex-col gap-5 max-h-[70vh] overflow-y-auto">
         <h2 className="text-lg font-semibold text-zinc-100">表示設定</h2>
 
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-400 text-sm">速度: {settings.displayDuration.toFixed(1)}秒/文節</span>
-          <input
-            type="range" min={0.5} max={10} step={0.1}
-            value={settings.displayDuration}
-            onChange={(e) => onUpdate({ displayDuration: parseFloat(e.target.value) })}
-            className="w-full accent-indigo-500"
-          />
-        </label>
+        <Slider
+          label="速度"
+          value={settings.displayDuration}
+          min={0.5}
+          max={10}
+          step={0.1}
+          displayValue={`${settings.displayDuration.toFixed(1)}秒/文節`}
+          onChange={(v) => onUpdate({ displayDuration: v })}
+        />
 
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-400 text-sm">文字サイズ: {settings.fontSize}px</span>
-          <input
-            type="range" min={24} max={80} step={1}
-            value={settings.fontSize}
-            onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) })}
-            className="w-full accent-indigo-500"
-          />
-        </label>
+        <Slider
+          label="文字サイズ"
+          value={settings.fontSize}
+          min={24}
+          max={80}
+          step={1}
+          displayValue={`${settings.fontSize}px`}
+          onChange={(v) => onUpdate({ fontSize: v })}
+        />
 
         <div className="flex flex-col gap-1">
           <span className="text-zinc-400 text-sm">テーマ</span>
@@ -54,26 +56,22 @@ export function SettingsDrawer({ settings, onUpdate, onClose }: SettingsDrawerPr
           </div>
         </div>
 
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            checked={settings.sleepMode}
-            onChange={(e) => onUpdate({ sleepMode: e.target.checked })}
-            className="accent-indigo-500 w-4 h-4"
-          />
-          <span className="text-zinc-300 text-sm">睡眠モード</span>
-        </label>
+        <Switch
+          label="睡眠モード"
+          checked={settings.sleepMode}
+          onChange={(v) => onUpdate({ sleepMode: v })}
+        />
 
         {settings.sleepMode && (
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-400 text-sm">減速時間: {settings.sleepRampMinutes}分</span>
-            <input
-              type="range" min={1} max={30} step={1}
-              value={settings.sleepRampMinutes}
-              onChange={(e) => onUpdate({ sleepRampMinutes: parseInt(e.target.value) })}
-              className="w-full accent-indigo-500"
-            />
-          </label>
+          <Slider
+            label="減速時間"
+            value={settings.sleepRampMinutes}
+            min={1}
+            max={30}
+            step={1}
+            displayValue={`${settings.sleepRampMinutes}分`}
+            onChange={(v) => onUpdate({ sleepRampMinutes: v })}
+          />
         )}
 
         <button onClick={onClose} className="mt-2 text-zinc-400 text-sm hover:text-zinc-200 transition-colors">
