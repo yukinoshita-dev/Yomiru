@@ -12,6 +12,7 @@
     "test:run": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@use-gesture/react": "^10.3.1",
     "dexie": "^4.4.2",
     "framer-motion": "^12.40.0",

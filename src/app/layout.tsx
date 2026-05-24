@@ -1,10 +1,19 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+
+export const viewport: Viewport = {
+  themeColor: '#111111',
+};
 
 export const metadata: Metadata = {
-  title: "Yomiru",
-  description:
-    "\u6587\u7bc0\u3054\u3068\u306b\u8aad\u66f8\u3092\u9032\u3081\u308bPWA\u30ea\u30fc\u30c0\u30fc\u30a2\u30d7\u30ea",
+  title: 'Yomiru',
+  description: '文節ごとに読書を進めるPWAリーダーアプリ',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Yomiru',
+  },
 };
 
 export default function RootLayout({

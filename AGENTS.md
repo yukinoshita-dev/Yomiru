@@ -78,12 +78,31 @@ Yomiru は、電子書籍を文節ごとに1チャンクずつ画面中央へ表
 このプロジェクトは Windows の Codex sandbox 環境で実行されます。
 以下のルールを **必ず守ること**:
 
-- **PowerShell / cmd は使用禁止** — サンドボックスが `Get-Content` 等を exit -1 でブロックする
-- **ファイル読み取り**: `node_repl/js` ツールで `fs.readFileSync('F:/Hobby/Book/src/...', 'utf8')` を使う
-- **ファイル書き込み**: `node_repl/js` ツールで `fs.writeFileSync(...)` を使う
-- **コマンド実行**: `node_repl/js` で `child_process.execSync('bun run test:run', { cwd: 'F:/Hobby/Book', encoding: 'utf8' })` を使う
-- **Git 操作**: Git MCP ツール（`mcp__git__*`）を使う
-- `exec` / `shell` / `powershell` / `cmd` ツールは呼び出さない
+- **PowerShell / cmd / shell / exec ツールは使用禁止** — サンドボックスが exit -1 でブロックする
+
+### ファイル読み取り
+`node_repl/js` ツールで `await import('fs')` 形式を使う（`require` は ESM 環境で使えない）:
+```javascript
+const fs = (await import('fs')).default;
+const content = fs.readFileSync('F:/Hobby/Book/src/lib/utils/id.ts', 'utf8');
+content
+```
+
+### ファイル書き込み・新規作成
+**node_repl/js の writeFileSync は新規ファイル作成で EPERM になる。**
+- 既存ファイルの編集 → Codex 内蔵の edit/write ツールを使う
+- 新規ファイル作成 → Codex 内蔵の write ツールを使う（node_repl/js は使わない）
+
+### コマンド実行（テスト等）
+`node_repl/js` で `await import('child_process')` を使い、**必ず `cwd` を指定する**:
+```javascript
+const { execSync } = await import('child_process');
+execSync('bun run vitest run --passWithNoTests', { cwd: 'F:/Hobby/Book', encoding: 'utf8', timeout: 120000 });
+```
+- テストコマンドは `bun run vitest run --passWithNoTests`（`bun run test:run` は sandbox 内で失敗する場合がある）
+
+### Git 操作
+Git MCP ツール（`mcp__git__*`）を使う
 
 ## 重要ファイル
 
