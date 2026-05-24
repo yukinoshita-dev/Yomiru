@@ -86,4 +86,22 @@ describe("parseAozoraRuby", () => {
       ruby: [],
     });
   });
+
+  it("ルビも注記もない平文は text がそのまま返り ruby は空配列", () => {
+    expect(parseAozoraRuby("普通の文章です。")).toEqual({
+      text: "普通の文章です。",
+      ruby: [],
+    });
+  });
+
+  it("複数の注記が連続しても全て除去する", () => {
+    expect(parseAozoraRuby("本文［＃注記1］［＃注記2］続き")).toEqual({
+      text: "本文続き",
+      ruby: [],
+    });
+  });
+
+  it("数字のみの《》はルビとして扱わない", () => {
+    expect(parseAozoraRuby("123《いちにさん》").ruby).toEqual([]);
+  });
 });

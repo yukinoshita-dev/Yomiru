@@ -33,4 +33,27 @@ describe("computeSleepRamp", () => {
     expect(r.shouldPause).toBe(true);
     expect(r.brightness).toBeCloseTo(0.2);
   });
+
+  it("rampMinutes=0 のとき shouldPause が即座に true になる", () => {
+    const r = computeSleepRamp({ elapsedMs: 1, rampMinutes: 0, baseDurationSec: 2 });
+
+    expect(r.shouldPause).toBe(true);
+  });
+
+  it("baseDurationSec が 0 のとき effectiveDuration も 0 のまま", () => {
+    const r = computeSleepRamp({ elapsedMs: 0, rampMinutes: 10, baseDurationSec: 0 });
+
+    expect(r.effectiveDuration).toBe(0);
+    expect(r.brightness).toBe(1);
+  });
+
+  it("brightness は 0.2 より下がらない", () => {
+    const r = computeSleepRamp({
+      elapsedMs: 20 * 60 * 1000,
+      rampMinutes: 10,
+      baseDurationSec: 2,
+    });
+
+    expect(r.brightness).toBe(0.2);
+  });
 });
