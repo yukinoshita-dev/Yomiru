@@ -25,7 +25,7 @@
 - [x] T-021 アクセシビリティと操作補助 — キーボード操作、aria、reduced motion を追加
 - [x] T-022 shadcn風UIブラッシュアップ — Button / Slider / Switch などの UI 部品を整備
 - [x] T-023 OGP・メタ情報・LP仕上げ — LP、OGP、SEO メタ情報、OG 画像を整備
-- [ ] T-024 サンプル書籍カバー自動生成 — 書籍カバー生成とライブラリ表示を改善
+- [x] T-024 サンプル書籍カバー自動生成 — 書籍カバー生成とライブラリ表示を改善
 - [ ] T-025 主要ロジックのユニットテスト網羅 — segmenter、ruby、parser、DB、reader のテストを拡充
 - [ ] T-026 手動QAチェックリスト — スマホ、PWA、Offline、操作系の手動 QA 手順を作成
 - [ ] T-027 Lighthouse / バンドル最適化 — Mobile Performance、PWA、SEO、A11y 目標へ調整

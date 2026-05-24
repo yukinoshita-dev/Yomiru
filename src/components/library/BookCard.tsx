@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Book } from "@/types";
 import type { ReadingState } from "@/types";
+import { generateCoverDataUrl } from "@/lib/utils/cover";
 
 interface BookCardProps {
   book: Book;
@@ -18,18 +19,13 @@ export function BookCard({ book, state, onDelete }: BookCardProps) {
   const progress = state && book.totalChunks > 0
     ? Math.round((state.currentIndex / book.totalChunks) * 100)
     : 0;
+  const coverDataUrl = book.coverDataUrl ?? generateCoverDataUrl(book.title, book.author);
 
   return (
     <div className="bg-zinc-800 rounded-xl p-4 flex flex-col gap-3">
       <Link href={`/reader/${book.id}`} className="flex gap-3 group">
-        {book.coverDataUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={book.coverDataUrl} alt={book.title} className="w-14 h-20 object-cover rounded" />
-        ) : (
-          <div className="w-14 h-20 bg-zinc-700 rounded flex items-center justify-center text-zinc-500 text-xs">
-            {book.format.toUpperCase()}
-          </div>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={coverDataUrl} alt={book.title} className="w-14 h-20 object-cover rounded" />
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-zinc-100 truncate group-hover:text-indigo-300 transition-colors">
             {book.title}
