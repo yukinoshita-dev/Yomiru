@@ -29,7 +29,7 @@
 - [x] T-025 主要ロジックのユニットテスト網羅 — segmenter、ruby、parser、DB、reader のテストを拡充
 - [x] T-026 手動QAチェックリスト — スマホ、PWA、Offline、操作系の手動 QA 手順を作成
 - [x] T-027 Lighthouse / バンドル最適化 — Mobile Performance、PWA、SEO、A11y 目標へ調整
-- [ ] T-028 Vercelデプロイ設定 — Vercel 手順、Build/Install Command、README 欄を整備
+- [x] T-028 Vercelデプロイ設定 — Vercel 手順、Build/Install Command、README 欄を整備
 - [ ] T-029 Obsidian Vault連携 — Vault 側メモ、ADR、調査メモ、MOC 参照を作成
 - [ ] T-030 最終仕上げ・READMEブラッシュ — 第三者に見せられる README とスクショ導線へ仕上げ
 

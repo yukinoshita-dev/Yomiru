@@ -2,7 +2,7 @@ import withPWA from '@ducanh2912/next-pwa';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: process.env.VERCEL ? undefined : 'standalone',
   compress: true,
   poweredByHeader: false,
   images: {

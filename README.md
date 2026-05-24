@@ -63,7 +63,8 @@ bun run build
 
 ## デプロイURL
 
-未設定
+Vercel にてデプロイ予定。
+手順は [docs/deploy.md](docs/deploy.md) を参照。
 
 ## 青空文庫出典表記
 
