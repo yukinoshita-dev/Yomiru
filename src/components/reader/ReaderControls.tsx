@@ -48,6 +48,8 @@ export function ReaderControls({
   return (
     <div
       {...bind()}
+      role="region"
+      aria-label="リーダー操作エリア（左タップ:前へ、中央:再生/停止、右タップ:次へ、上下スワイプ:速度調整）"
       className="fixed inset-0 z-20"
       onClick={handleTap}
       onContextMenu={(e) => {

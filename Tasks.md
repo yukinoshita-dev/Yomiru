@@ -22,7 +22,7 @@
 - [x] T-018 設定ページ — 速度、文字サイズ、テーマ、睡眠設定、データ削除を実装
 - [x] T-019 PWA化（next-pwa + manifest + icons） — manifest、アイコン、Service Worker を設定
 - [x] T-020 オフライン挙動とサンプル即時利用 — Offline でもサンプル読書できるプリキャッシュを整備
-- [ ] T-021 アクセシビリティと操作補助 — キーボード操作、aria、reduced motion を追加
+- [x] T-021 アクセシビリティと操作補助 — キーボード操作、aria、reduced motion を追加
 - [ ] T-022 shadcn風UIブラッシュアップ — Button / Slider / Switch などの UI 部品を整備
 - [ ] T-023 OGP・メタ情報・LP仕上げ — LP、OGP、SEO メタ情報、OG 画像を整備
 - [ ] T-024 サンプル書籍カバー自動生成 — 書籍カバー生成とライブラリ表示を改善

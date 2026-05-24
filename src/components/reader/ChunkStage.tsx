@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RubyText } from "./RubyText";
 import type { Chunk, Theme } from "@/types";
 
@@ -18,7 +18,8 @@ const THEME_STYLES: Record<Theme, { bg: string; fg: string }> = {
 };
 
 export function ChunkStage({ chunk, fadeMs, fontSize, theme }: ChunkStageProps) {
-  const fadeSec = fadeMs / 1000;
+  const shouldReduceMotion = useReducedMotion();
+  const fadeSec = (shouldReduceMotion ? 0 : fadeMs) / 1000;
   const { bg, fg } = THEME_STYLES[theme];
 
   return (
