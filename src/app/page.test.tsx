@@ -3,18 +3,27 @@ import { describe, expect, it } from "vitest";
 import Home from "./page";
 
 describe("Home", () => {
-  it("renders the Yomiru hero", () => {
+  it("renders the Yomiru landing page", () => {
     render(<Home />);
 
     expect(
       screen.getByRole("heading", {
-        name: "Yomiru - \u6587\u7bc0\u30ea\u30fc\u30c0\u30fc",
+        name: "よみる",
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "\u6587\u7bc0\u3054\u3068\u306b\u8aad\u3080\u305f\u3081\u306ePWA\u30ea\u30fc\u30c0\u30fc",
-      ),
+      screen.getByText("文節ごとに読む。目に優しい自動送りリーダー。"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "ライブラリを開く →" }),
+    ).toHaveAttribute("href", "/library");
+    expect(screen.getByRole("heading", { name: "集中" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "PWA対応" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "青空文庫対応" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Space:再生停止 / 矢印:進む戻る / S:睡眠モード"),
     ).toBeInTheDocument();
   });
 });
