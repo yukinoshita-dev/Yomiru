@@ -9,6 +9,8 @@ import { ImportDropzone } from "@/components/library/ImportDropzone";
 import { deleteBook, listBooks } from "@/lib/db/repositories/books";
 import { getReadingState } from "@/lib/db/repositories/readingState";
 import { useImport } from "@/features/library/useImport";
+import { useSampleSeeder } from "@/features/library/useSampleSeeder";
+import { Button } from "@/components/ui/Button";
 import type { Book, ReadingState } from "@/types";
 
 interface BookWithState {
@@ -34,6 +36,7 @@ export default function LibraryPage() {
   useEffect(() => { loadBooks(); }, [loadBooks]);
 
   const { importing, importFile } = useImport(loadBooks);
+  const { seeding, seedAll } = useSampleSeeder(loadBooks);
 
   async function handleDelete() {
     if (!deleteTarget) return;
@@ -54,6 +57,11 @@ export default function LibraryPage() {
       </header>
 
       <ImportDropzone importing={importing} onFile={importFile} />
+      <div className="mt-3 flex justify-end">
+        <Button variant="secondary" onClick={() => seedAll()} disabled={seeding}>
+          {seeding ? "読み込み中..." : "サンプルを読み込む"}
+        </Button>
+      </div>
 
       <section className="mt-6 grid grid-cols-1 gap-4">
         {items.length === 0 && (
