@@ -10,7 +10,7 @@ import { useTermsConsent } from '@/hooks/useTermsConsent';
 
 export default function Home() {
   const bunsetsu = KOKORO_BUNSETSU;
-  const [idx] = useBunsetsuCycle({ total: bunsetsu.length, intervalMs: 1100 });
+  const [idx] = useBunsetsuCycle({ total: bunsetsu.length, intervalMs: 2600 });
   const { accepted, accept } = useTermsConsent();
 
   const at = (offset: number) =>

@@ -7,7 +7,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
   sleepMode: false,
   sleepRampMinutes: 20,
-  displayDuration: 2.3,
+  displayDuration: 2.7,
   fadeMs: 120,
   seededSamples: false,
 };
