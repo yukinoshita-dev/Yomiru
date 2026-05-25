@@ -254,6 +254,17 @@ export default function ReaderPage() {
 
   const palette = THEME_PALETTES[settings.theme];
   const chapterKanji = toChapterKanji(visibleChunks.current?.chapterIndex);
+
+  useEffect(() => {
+    const prevBg = document.body.style.background;
+    const prevColor = document.body.style.color;
+    document.body.style.background = palette.bg;
+    document.body.style.color = palette.fg;
+    return () => {
+      document.body.style.background = prevBg;
+      document.body.style.color = prevColor;
+    };
+  }, [palette]);
   let brightness = 1;
   if (sleepActive) {
     const ramp = computeSleepRamp({
@@ -265,7 +276,7 @@ export default function ReaderPage() {
   }
 
   return (
-    <div className={`${palette.classes.root} relative flex min-h-screen flex-col font-jp`}>
+    <div className={`${palette.classes.root} relative flex min-h-screen min-h-dvh flex-col font-jp`}>
       <Toaster position="top-center" theme={settings.theme === "light" ? "light" : "dark"} />
       {settings.theme === "lamp" && <LampGlow />}
       {settings.theme === "dark" && <DarkVignette />}

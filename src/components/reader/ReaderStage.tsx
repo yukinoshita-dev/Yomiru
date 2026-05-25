@@ -19,8 +19,6 @@ interface ReaderStageProps {
 
 export function ReaderStage({
   chunk,
-  prev,
-  next,
   fadeMs,
   fontSize,
   palette,
@@ -32,10 +30,9 @@ export function ReaderStage({
   return (
     <div className="with-ruby relative z-10 flex w-full flex-1 items-center justify-center" aria-live="polite" aria-atomic="true">
       <div
-        className="flex items-center gap-5 font-mincho"
+        className="flex items-center justify-center font-mincho"
         style={{ writingMode: "vertical-rl" }}
       >
-        <BunsetsuGhost chunk={prev} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[20px]" />
         <AnimatePresence mode="wait">
           {chunk && (
             <motion.div
@@ -44,31 +41,14 @@ export function ReaderStage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: fadeSec }}
-              className={`shrink-0 max-h-[55vh] font-medium tracking-[0.06em] ${palette.classes.bunsetsuCurrent} ${reveal}`}
-              style={{ fontSize: `${fontSize}px`, lineHeight: 1.5 }}
+              className={`shrink-0 max-h-[70vh] font-medium tracking-[0.06em] ${palette.classes.bunsetsuCurrent} ${reveal}`}
+              style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
             >
               <ChunkText chunk={chunk} />
             </motion.div>
           )}
         </AnimatePresence>
-        <BunsetsuGhost chunk={next} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[20px]" />
       </div>
-    </div>
-  );
-}
-
-function BunsetsuGhost({
-  chunk,
-  className,
-  sizeClass,
-}: {
-  chunk?: Chunk;
-  className: string;
-  sizeClass: string;
-}) {
-  return (
-    <div className={`min-w-[1.5em] shrink-0 max-h-[45vh] tracking-[0.08em] ${sizeClass} ${className}`}>
-      {chunk ? <ChunkText chunk={chunk} /> : null}
     </div>
   );
 }

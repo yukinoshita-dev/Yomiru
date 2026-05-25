@@ -60,7 +60,7 @@ describe("reader redesign utilities", () => {
 });
 
 describe("ReaderStage", () => {
-  it("renders current, previous, and next chunks with ruby support", () => {
+  it("renders the current chunk only with ruby support", () => {
     render(
       <ReaderStage
         chunk={chunk(2, "先生と私", { ruby: [{ base: "先生", rt: "せんせい" }] })}
@@ -72,10 +72,10 @@ describe("ReaderStage", () => {
       />,
     );
 
-    expect(screen.getByText("すぐ前")).toBeInTheDocument();
-    expect(screen.getByText("すぐ次")).toBeInTheDocument();
     expect(screen.getByText("先生")).toBeInTheDocument();
     expect(screen.getByText("せんせい")).toBeInTheDocument();
+    expect(screen.queryByText("すぐ前")).not.toBeInTheDocument();
+    expect(screen.queryByText("すぐ次")).not.toBeInTheDocument();
   });
 });
 
