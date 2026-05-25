@@ -39,7 +39,7 @@ export const THEME_PALETTES: Record<Theme, ThemePalette> = {
       accentBg: "bg-glow",
       border: "border-glow/12",
       bunsetsuCurrent:
-        "text-bright [text-shadow:_0_0_30px_rgba(232,169,106,0.55),_0_0_80px_rgba(232,169,106,0.22)]",
+        "text-bright [text-shadow:_0_0_18px_rgba(232,169,106,0.45),_0_0_36px_rgba(232,169,106,0.15)]",
       bunsetsuGhostNear: "text-cream/30",
       bunsetsuGhostFar: "text-cream/15",
       reveal: "animate-andon-reveal",

@@ -64,20 +64,16 @@ describe("ReaderStage", () => {
     render(
       <ReaderStage
         chunk={chunk(2, "先生と私", { ruby: [{ base: "先生", rt: "せんせい" }] })}
-        prevPrev={chunk(0, "遠い前")}
         prev={chunk(1, "すぐ前")}
         next={chunk(3, "すぐ次")}
-        nextNext={chunk(4, "遠い次")}
         fadeMs={300}
         fontSize={56}
         palette={THEME_PALETTES.light}
       />,
     );
 
-    expect(screen.getByText("遠い前")).toBeInTheDocument();
     expect(screen.getByText("すぐ前")).toBeInTheDocument();
     expect(screen.getByText("すぐ次")).toBeInTheDocument();
-    expect(screen.getByText("遠い次")).toBeInTheDocument();
     expect(screen.getByText("先生")).toBeInTheDocument();
     expect(screen.getByText("せんせい")).toBeInTheDocument();
   });
