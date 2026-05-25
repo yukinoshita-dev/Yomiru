@@ -46,21 +46,21 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="relative flex flex-1 items-center justify-center px-0 pb-12 pt-8 min-h-[640px]">
+      <main className="relative flex flex-1 items-center justify-center px-6 pb-12 pt-8 min-h-[640px]">
         <div
-          className="flex max-h-[60vh] items-center gap-6 font-mincho"
+          className="flex items-center gap-6 font-mincho"
           style={{ writingMode: 'vertical-rl' }}
         >
-          <div className="shrink-0 text-[18px] tracking-[0.08em] text-cream/15">{at(-2)}</div>
-          <div className="shrink-0 text-[22px] tracking-[0.08em] text-cream/30">{at(-1)}</div>
+          <div className="shrink-0 max-h-[40vh] text-[18px] tracking-[0.08em] text-cream/15">{at(-2)}</div>
+          <div className="shrink-0 max-h-[40vh] text-[22px] tracking-[0.08em] text-cream/30">{at(-1)}</div>
           <div
             key={idx}
-            className="shrink-0 animate-andon-reveal text-[48px] font-medium tracking-[0.06em] text-bright [text-shadow:_0_0_30px_rgba(232,169,106,0.55),_0_0_80px_rgba(232,169,106,0.22)]"
+            className="shrink-0 max-h-[45vh] animate-andon-reveal text-[44px] font-medium tracking-[0.06em] text-bright [text-shadow:_0_0_30px_rgba(232,169,106,0.55),_0_0_80px_rgba(232,169,106,0.22)]"
           >
             {at(0)}
           </div>
-          <div className="shrink-0 text-[22px] tracking-[0.08em] text-cream/30">{at(1)}</div>
-          <div className="shrink-0 text-[18px] tracking-[0.08em] text-cream/15">{at(2)}</div>
+          <div className="shrink-0 max-h-[40vh] text-[22px] tracking-[0.08em] text-cream/30">{at(1)}</div>
+          <div className="shrink-0 max-h-[40vh] text-[18px] tracking-[0.08em] text-cream/15">{at(2)}</div>
         </div>
 
         <div className="writing-vrl absolute left-16 top-1/2 flex -translate-y-1/2 items-center gap-7">
