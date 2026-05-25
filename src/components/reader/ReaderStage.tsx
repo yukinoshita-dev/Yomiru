@@ -30,12 +30,12 @@ export function ReaderStage({
   const reveal = shouldReduceMotion ? "" : palette.classes.reveal;
 
   return (
-    <div className="with-ruby relative z-10 flex min-h-[52vh] items-center justify-center overflow-hidden" aria-live="polite" aria-atomic="true">
+    <div className="with-ruby relative z-10 flex w-full flex-1 items-center justify-center" aria-live="polite" aria-atomic="true">
       <div
-        className="flex items-center gap-9 font-mincho"
+        className="flex items-center gap-5 font-mincho"
         style={{ writingMode: "vertical-rl" }}
       >
-        <BunsetsuGhost chunk={prev} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[24px]" />
+        <BunsetsuGhost chunk={prev} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[20px]" />
         <AnimatePresence mode="wait">
           {chunk && (
             <motion.div
@@ -44,14 +44,14 @@ export function ReaderStage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: fadeSec }}
-              className={`shrink-0 max-h-[60vh] font-medium tracking-[0.06em] ${palette.classes.bunsetsuCurrent} ${reveal}`}
+              className={`shrink-0 max-h-[55vh] font-medium tracking-[0.06em] ${palette.classes.bunsetsuCurrent} ${reveal}`}
               style={{ fontSize: `${fontSize}px`, lineHeight: 1.5 }}
             >
               <ChunkText chunk={chunk} />
             </motion.div>
           )}
         </AnimatePresence>
-        <BunsetsuGhost chunk={next} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[24px]" />
+        <BunsetsuGhost chunk={next} className={palette.classes.bunsetsuGhostNear} sizeClass="text-[20px]" />
       </div>
     </div>
   );
@@ -67,7 +67,7 @@ function BunsetsuGhost({
   sizeClass: string;
 }) {
   return (
-    <div className={`min-w-[1.5em] shrink-0 max-h-[50vh] tracking-[0.08em] ${sizeClass} ${className}`}>
+    <div className={`min-w-[1.5em] shrink-0 max-h-[45vh] tracking-[0.08em] ${sizeClass} ${className}`}>
       {chunk ? <ChunkText chunk={chunk} /> : null}
     </div>
   );

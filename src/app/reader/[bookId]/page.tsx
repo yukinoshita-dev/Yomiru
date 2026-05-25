@@ -265,7 +265,7 @@ export default function ReaderPage() {
   }
 
   return (
-    <div className={`${palette.classes.root} relative flex min-h-screen flex-col overflow-hidden font-jp`}>
+    <div className={`${palette.classes.root} relative flex min-h-screen flex-col font-jp`}>
       <Toaster position="top-center" theme={settings.theme === "light" ? "light" : "dark"} />
       {settings.theme === "lamp" && <LampGlow />}
       {settings.theme === "dark" && <DarkVignette />}
@@ -282,7 +282,7 @@ export default function ReaderPage() {
       />
       <ReaderProgressBar current={index} total={totalChunks} palette={palette} />
 
-      <main className="relative flex flex-1 items-center justify-center px-0 py-5">
+      <main className="relative flex flex-1 items-center justify-center px-0 py-2">
         {settings.theme === "dark" && <DarkCrosshair />}
         <ReaderSideRails
           side="left"
