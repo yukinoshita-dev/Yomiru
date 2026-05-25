@@ -1,60 +1,127 @@
-import Link from 'next/link';
+'use client';
 
-const features = [
-  {
-    title: '集中',
-    description: '文節ごとに中央へ表示して、視線を動かさず読み進められます。',
-  },
-  {
-    title: 'PWA対応',
-    description: 'ホーム画面に追加して、アプリのように読書を続けられます。',
-  },
-  {
-    title: '青空文庫対応',
-    description: '青空文庫のルビ記法を読みやすく整えて表示します。',
-  },
-];
+import Link from 'next/link';
+import { KOKORO_BUNSETSU } from '@/data/bunsetsu';
+import { useBunsetsuCycle } from '@/hooks/useBunsetsuCycle';
 
 export default function Home() {
+  const bunsetsu = KOKORO_BUNSETSU;
+  const [idx] = useBunsetsuCycle({ total: bunsetsu.length, intervalMs: 1100 });
+
+  const at = (offset: number) =>
+    bunsetsu[(idx + offset + bunsetsu.length) % bunsetsu.length];
+
   return (
-    <main className="flex min-h-screen bg-black px-6 py-10 text-white">
-      <section className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl flex-col items-center justify-center gap-10 text-center">
-        <div>
-          <h1 className="text-6xl font-bold tracking-normal sm:text-8xl">
-            よみる
-          </h1>
-          <p className="mt-6 text-base leading-8 text-zinc-300 sm:text-xl">
-            文節ごとに読む。目に優しい自動送りリーダー。
-          </p>
+    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-ink font-jp text-cream">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_700px_800px_at_50%_38%,rgba(232,169,106,0.22),rgba(232,169,106,0.06)_40%,transparent_70%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_240px_at_50%_40%,rgba(255,210,150,0.10),transparent_70%)]"
+      />
+
+      <header className="relative z-10 flex items-start justify-between px-12 py-8">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mincho text-[26px] tracking-[0.08em] text-paper">よみる</span>
+          <span className="font-roman text-[11px] tracking-[0.42em] text-cream/45">YOMIRU</span>
+        </div>
+        <div className="flex items-center gap-2 rounded-full border border-glow/20 bg-glow/[0.03] px-3.5 py-2 text-[11px] tracking-[0.18em] text-cream/60">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 animate-andon-pulse rounded-full bg-glow shadow-[0_0_12px_var(--color-glow),0_0_24px_rgba(232,169,106,0.4)]"
+          />
+          <span>再生中</span>
+          <span className="opacity-40">·</span>
+          <span className="font-roman text-[13px] tracking-[0.1em]">
+            {String(idx + 1).padStart(2, '0')}
+            <span className="opacity-50"> / {String(bunsetsu.length).padStart(2, '0')}</span>
+          </span>
+        </div>
+      </header>
+
+      <main className="relative flex flex-1 items-center justify-center px-0 pb-10 pt-5 min-h-[580px]">
+        <div className="writing-vrl flex h-[480px] items-center gap-9 font-mincho">
+          <div className="text-[22px] tracking-[0.08em] text-cream/15">{at(-2)}</div>
+          <div className="text-[28px] tracking-[0.08em] text-cream/30">{at(-1)}</div>
+          <div
+            key={idx}
+            className="animate-andon-reveal text-[72px] font-medium tracking-[0.06em] text-bright [text-shadow:_0_0_30px_rgba(232,169,106,0.55),_0_0_80px_rgba(232,169,106,0.22)]"
+          >
+            {at(0)}
+          </div>
+          <div className="text-[28px] tracking-[0.08em] text-cream/30">{at(1)}</div>
+          <div className="text-[22px] tracking-[0.08em] text-cream/15">{at(2)}</div>
         </div>
 
-        <div className="grid w-full gap-4 sm:grid-cols-3">
-          {features.map((feature) => (
-            <article
-              key={feature.title}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 p-6 text-left"
-            >
-              <h2 className="text-lg font-semibold text-white">
-                {feature.title}
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-400">
-                {feature.description}
-              </p>
-            </article>
-          ))}
+        <div className="writing-vrl absolute left-16 top-1/2 flex -translate-y-1/2 items-center gap-7">
+          <div className="font-mincho text-[17px] tracking-[0.5em] text-cream/50">文節ごとに、灯のように。</div>
+          <div className="font-roman text-[13px] italic tracking-[0.32em] text-glow/50">One phrase, one breath.</div>
         </div>
 
+        <div className="writing-vrl absolute right-16 top-1/2 flex -translate-y-1/2 items-start gap-5 font-mincho text-cream/40">
+          <div className="text-[13px] tracking-[0.3em]">夏目漱石</div>
+          <div className="text-[13px] tracking-[0.18em]">『こころ』</div>
+        </div>
+      </main>
+
+      <section className="relative z-10 border-t border-glow/10 px-16">
+        <div className="grid grid-cols-3">
+          <Feature kanji="一" en="01" title="視線を、動かさない" body="文節ごとに中央へ。仰向けでも横向きでも、目だけが頁をひらく。" />
+          <Feature kanji="二" en="02" title="夜に、馴染む" body="行燈のような暖色。深夜の網膜を刺さない、低い灯。" />
+          <Feature kanji="三" en="03" title="まどろみへ、降りる" body="睡眠モードがゆっくり減速し、文節は灯火のように落ちる。" last />
+        </div>
+      </section>
+
+      <footer className="relative z-10 flex items-center justify-between border-t border-glow/10 px-12 pb-8 pt-7">
+        <div className="flex items-center gap-2 text-[11px] tracking-[0.14em] text-cream/45">
+          <KeyCap>Space</KeyCap>
+          <span className="tracking-[0.12em]">再生 / 停止</span>
+          <span className="px-1 opacity-30">·</span>
+          <KeyCap>← →</KeyCap>
+          <span className="tracking-[0.12em]">進む / 戻る</span>
+          <span className="px-1 opacity-30">·</span>
+          <KeyCap>S</KeyCap>
+          <span className="tracking-[0.12em]">睡眠</span>
+        </div>
         <Link
           href="/library"
-          className="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+          className="flex items-center gap-3.5 rounded-full border border-glow/40 bg-glow/[0.06] px-7 py-3.5 font-mincho text-[15px] tracking-[0.24em] text-bright transition-colors hover:bg-glow/[0.1]"
         >
-          ライブラリを開く →
+          <span>ライブラリをひらく</span>
+          <span className="font-roman text-base text-glow">→</span>
         </Link>
+      </footer>
+    </div>
+  );
+}
 
-        <p className="text-xs leading-6 text-zinc-500 sm:text-sm">
-          Space:再生停止 / 矢印:進む戻る / S:睡眠モード
-        </p>
-      </section>
-    </main>
+interface FeatureProps {
+  kanji: string;
+  en: string;
+  title: string;
+  body: string;
+  last?: boolean;
+}
+
+function Feature({ kanji, en, title, body, last }: FeatureProps) {
+  return (
+    <div className={'flex flex-col gap-4 pb-9 pr-8 pt-10' + (last ? '' : ' border-r border-glow/[0.08]')}>
+      <div className="flex items-baseline gap-4">
+        <span className="font-mincho text-[56px] leading-none text-glow/70">{kanji}</span>
+        <span className="font-roman text-sm tracking-[0.3em] text-cream/35">{en}</span>
+      </div>
+      <div className="font-mincho text-[22px] tracking-[0.06em] text-paper">{title}</div>
+      <div className="text-[13px] leading-[1.9] tracking-[0.04em] text-cream/55">{body}</div>
+    </div>
+  );
+}
+
+function KeyCap({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded border border-glow/25 bg-glow/[0.04] px-2 py-0.5 font-roman text-xs tracking-[0.1em] text-cream/75">
+      {children}
+    </span>
   );
 }
