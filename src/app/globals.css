@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
-
 @theme {
   --color-ink:        #0a0807;
   --color-cream:      #e8d9c0;
@@ -10,9 +8,9 @@
   --color-glow:       #e8a96a;
   --color-vermillion: #a8453a;
 
-  --font-mincho: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
-  --font-jp:     'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
-  --font-roman:  'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --font-mincho: var(--font-mincho-loaded), 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --font-jp:     var(--font-jp-loaded), 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+  --font-roman:  var(--font-roman-loaded), 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
 
   --animate-andon-pulse:  andon-pulse 1.4s ease-in-out infinite;
   --animate-andon-reveal: andon-reveal 0.55s ease-out;
