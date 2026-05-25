@@ -1,5 +1,18 @@
-import withPWA from '@ducanh2912/next-pwa';
+import withSerwistInit from '@serwist/next';
 import type { NextConfig } from 'next';
+
+const withSerwist = withSerwistInit({
+  swSrc: 'src/app/sw.ts',
+  swDest: 'public/sw.js',
+  disable: process.env.NODE_ENV === 'development' || process.env.DISABLE_PWA === '1',
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
+  additionalPrecacheEntries: [
+    { url: '/samples/rashomon-akutagawa.aozora.txt', revision: null },
+    { url: '/samples/chumon-miyazawa.aozora.txt', revision: null },
+    { url: '/samples/kokoro-soseki.aozora.txt', revision: null },
+  ],
+});
 
 const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : 'standalone',
@@ -14,17 +27,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development' || process.env.DISABLE_PWA === '1',
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  workboxOptions: {
-    additionalManifestEntries: [
-      { url: '/samples/rashomon-akutagawa.aozora.txt', revision: null },
-      { url: '/samples/chumon-miyazawa.aozora.txt', revision: null },
-      { url: '/samples/kokoro-soseki.aozora.txt', revision: null },
-    ],
-  },
-})(nextConfig);
+export default withSerwist(nextConfig);

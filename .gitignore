@@ -39,5 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# PWA build outputs
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
+public/swe-worker-*.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+
 # codex tmp
 .tmp/

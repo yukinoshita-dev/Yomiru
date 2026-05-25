@@ -37,7 +37,7 @@
 - [x] T-033 利用規約・著作権表示の追加 — /termsページ新規作成、トップページフッターにリンク追加、初回利用時の同意モーダル（localStorage記憶）を実装
 - [x] T-034 ビルド修正（Google Fontsをnext/font化） — @import順序エラーとプリレンダー失敗を解消、Next.jsのフォント最適化に対応
 - [x] T-035 クライアント完結ページのSSR防御強化 — Dexie/localStorage依存ページに dynamic='force-dynamic' を付与、Next.js 15用 global-error.tsx を追加、DISABLE_PWA フラグを next.config.ts に追加（プリレンダー失敗の根本原因はnext-pwa側にありT-036で対応）
-- [ ] T-036 @serwist/next 移行（next-pwa脱却） — @ducanh2912/next-pwa 10.2.9 と Next.js 15 のwebpack-runtime互換性問題を根本解決するため、@serwist/next にPWA基盤を移行
+- [x] T-036 @serwist/next 移行（next-pwa脱却） — @ducanh2912/next-pwa 10.2.9 と Next.js 15 のwebpack-runtime互換性問題を根本解決するため、@serwist/next にPWA基盤を移行
 
 ## コミットメッセージ運用
 
