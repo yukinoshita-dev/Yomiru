@@ -3,12 +3,14 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db/database";
 import {
   addBook,
+  addBookmark,
   addChunks,
   deleteBook,
   findBookBySourceHash,
   getBookById,
   getChunksByBook,
   getReadingState,
+  isBookmarked,
   listBooks,
   upsertReadingState,
 } from "@/lib/db/repositories";
@@ -76,11 +78,13 @@ describe("books repository", () => {
     await addBook(book("book-1", 100));
     await addChunks([chunk("book-1", 0), chunk("book-1", 1)]);
     await upsertReadingState(readingState("book-1"));
+    await addBookmark("book-1", 1, "bookmarked chunk");
 
     await deleteBook("book-1");
 
     await expect(getBookById("book-1")).resolves.toBeUndefined();
     await expect(getChunksByBook("book-1")).resolves.toEqual([]);
     await expect(getReadingState("book-1")).resolves.toBeUndefined();
+    await expect(isBookmarked("book-1", 1)).resolves.toBe(false);
   });
 });

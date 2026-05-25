@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Toaster } from "sonner";
 import { GestureLayer } from "@/components/reader/GestureLayer";
 import { ReaderControlBar } from "@/components/reader/ReaderControlBar";
@@ -13,6 +13,7 @@ import { ReaderSideRails } from "@/components/reader/ReaderSideRails";
 import { ReaderStage } from "@/components/reader/ReaderStage";
 import { PaperGrain } from "@/components/reader/shared/PaperGrain";
 import { SettingsDrawer } from "@/components/reader/SettingsDrawer";
+import { addBookmark, isBookmarked, removeBookmark } from "@/lib/db/repositories/bookmarks";
 import { getBookById } from "@/lib/db/repositories/books";
 import { getChunkAt, getChunksByBook } from "@/lib/db/repositories/chunks";
 import { getReadingState, upsertReadingState } from "@/lib/db/repositories/readingState";
@@ -39,6 +40,8 @@ export default function ReaderPage() {
   const params = useParams();
   const bookId = params.bookId as string;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const atFromUrl = searchParams.get("at");
 
   useHydrateSettings();
   const {
@@ -62,6 +65,7 @@ export default function ReaderPage() {
   const [book, setBook] = useState<Book | undefined>();
   const [visibleChunks, setVisibleChunks] = useState<VisibleChunks>({});
   const [showSettings, setShowSettings] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const cacheRef = useRef<Map<number, Chunk>>(new Map());
 
@@ -88,7 +92,9 @@ export default function ReaderPage() {
       ]);
       if (cancelled) return;
 
-      const startIndex = state?.currentIndex ?? 0;
+      const startIndex = atFromUrl != null
+        ? Math.max(0, Number(atFromUrl) || 0)
+        : (state?.currentIndex ?? 0);
       load(bookId, startIndex, chunks.length);
       setBook(loadedBook);
 
@@ -103,7 +109,7 @@ export default function ReaderPage() {
     return () => {
       cancelled = true;
     };
-  }, [bookId, load, setVisibleFromCache]);
+  }, [atFromUrl, bookId, load, setVisibleFromCache]);
 
   useEffect(() => {
     if (!bookId || index < 0) return;
@@ -185,6 +191,32 @@ export default function ReaderPage() {
     });
   }, [bookId, index, router]);
 
+  const chunk = visibleChunks.current;
+
+  useEffect(() => {
+    if (!bookId || index < 0) return;
+    let cancelled = false;
+
+    void isBookmarked(bookId, index).then((nextBookmarked) => {
+      if (!cancelled) setBookmarked(nextBookmarked);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bookId, index]);
+
+  const handleBookmark = useCallback(async () => {
+    if (!bookId || !chunk) return;
+    if (bookmarked) {
+      await removeBookmark(bookId, index);
+      setBookmarked(false);
+    } else {
+      await addBookmark(bookId, index, chunk.text);
+      setBookmarked(true);
+    }
+  }, [bookId, bookmarked, chunk, index]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -254,8 +286,8 @@ export default function ReaderPage() {
         palette={palette}
         onClose={closeReader}
         onOpenSettings={() => setShowSettings(true)}
-        onBookmark={() => {}}
-        bookmarked={false}
+        onBookmark={handleBookmark}
+        bookmarked={bookmarked}
       />
       <ReaderProgressBar current={index} total={totalChunks} palette={palette} />
 

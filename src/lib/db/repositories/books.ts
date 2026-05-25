@@ -1,5 +1,6 @@
 import { db } from "@/lib/db/database";
 import type { Book } from "@/types";
+import { removeBookmarksByBook } from "./bookmarks";
 
 export const addBook = async (book: Book): Promise<string> => {
   await db.books.put(book);
@@ -19,10 +20,11 @@ export const updateBook = (id: string, patch: Partial<Book>): Promise<number> =>
 };
 
 export const deleteBook = async (id: string): Promise<void> => {
-  await db.transaction("rw", db.books, db.chunks, db.readingState, async () => {
+  await db.transaction("rw", db.books, db.chunks, db.readingState, db.bookmarks, async () => {
     await db.books.delete(id);
     await db.chunks.where("bookId").equals(id).delete();
     await db.readingState.delete(id);
+    await removeBookmarksByBook(id);
   });
 };
 

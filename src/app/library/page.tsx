@@ -9,12 +9,13 @@ import { toast } from "sonner";
 import { BookCard } from "@/components/library/BookCard";
 import { DeleteDialog } from "@/components/library/DeleteDialog";
 import { ImportDropzone } from "@/components/library/ImportDropzone";
-import { deleteBook, listBooks } from "@/lib/db/repositories/books";
+import { listAllBookmarks } from "@/lib/db/repositories/bookmarks";
+import { deleteBook, getBookById, listBooks } from "@/lib/db/repositories/books";
 import { getReadingState } from "@/lib/db/repositories/readingState";
 import { useImport } from "@/features/library/useImport";
 import { useSampleSeeder } from "@/features/library/useSampleSeeder";
 import { Button } from "@/components/ui/Button";
-import type { Book, ReadingState } from "@/types";
+import type { Book, Bookmark, ReadingState } from "@/types";
 
 interface BookWithState {
   book: Book;
@@ -23,6 +24,7 @@ interface BookWithState {
 
 export default function LibraryPage() {
   const [items, setItems] = useState<BookWithState[]>([]);
+  const [bookmarks, setBookmarks] = useState<Array<{ bookmark: Bookmark; book?: Book }>>([]);
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
 
   const loadBooks = useCallback(async () => {
@@ -36,7 +38,19 @@ export default function LibraryPage() {
     setItems(withStates);
   }, []);
 
+  const loadBookmarks = useCallback(async () => {
+    const raws = await listAllBookmarks(5);
+    const enriched = await Promise.all(
+      raws.map(async (bookmark) => ({
+        bookmark,
+        book: await getBookById(bookmark.bookId),
+      })),
+    );
+    setBookmarks(enriched.filter((entry) => entry.book !== undefined));
+  }, []);
+
   useEffect(() => { loadBooks(); }, [loadBooks]);
+  useEffect(() => { loadBookmarks(); }, [loadBookmarks]);
 
   const { importing, importFile } = useImport(loadBooks);
   const { seeding, seedAll } = useSampleSeeder(loadBooks);
@@ -47,6 +61,7 @@ export default function LibraryPage() {
     toast.success(`「${deleteTarget.title}」を削除しました`);
     setDeleteTarget(null);
     loadBooks();
+    loadBookmarks();
   }
 
   return (
@@ -58,6 +73,27 @@ export default function LibraryPage() {
           <a href="/settings" className="hover:text-zinc-100 transition-colors">設定</a>
         </nav>
       </header>
+
+      {bookmarks.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-sm font-semibold text-zinc-300 mb-2 tracking-wider">しおり</h2>
+          <div className="flex flex-col gap-2">
+            {bookmarks.map(({ bookmark, book }) => (
+              <Link
+                key={bookmark.id}
+                href={`/reader/${bookmark.bookId}?at=${bookmark.chunkIndex}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-3 hover:border-zinc-700 transition-colors"
+              >
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-xs text-zinc-500">{book?.title ?? "（削除済み）"}</span>
+                  <span className="text-sm text-zinc-200 truncate">{bookmark.excerpt}</span>
+                </div>
+                <span className="text-xs text-zinc-500 shrink-0">#{bookmark.chunkIndex + 1}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <ImportDropzone importing={importing} onFile={importFile} />
       <p className="mt-3 text-[11px] leading-[1.8] text-zinc-500">
