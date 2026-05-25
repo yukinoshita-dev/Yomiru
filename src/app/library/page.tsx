@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { toast } from "sonner";
@@ -57,6 +58,12 @@ export default function LibraryPage() {
       </header>
 
       <ImportDropzone importing={importing} onFile={importFile} />
+      <p className="mt-3 text-[11px] leading-[1.8] text-zinc-500">
+        アップロードできるのは、ご自身が権利を有するテキスト、著作権の保護期間が満了したテキスト、または権利者から利用許諾を得たテキストのみです。
+        <Link href="/terms" className="ml-1 text-zinc-400 underline underline-offset-2 hover:text-zinc-200">
+          利用規約
+        </Link>
+      </p>
       <div className="mt-3 flex justify-end">
         <Button variant="secondary" onClick={() => seedAll()} disabled={seeding}>
           {seeding ? "読み込み中..." : "サンプルを読み込む"}

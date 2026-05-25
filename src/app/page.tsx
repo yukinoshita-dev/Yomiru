@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { TermsConsentModal } from '@/components/TermsConsentModal';
 import { KOKORO_BUNSETSU } from '@/data/bunsetsu';
 import { useBunsetsuCycle } from '@/hooks/useBunsetsuCycle';
+import { useTermsConsent } from '@/hooks/useTermsConsent';
 
 export default function Home() {
   const bunsetsu = KOKORO_BUNSETSU;
   const [idx] = useBunsetsuCycle({ total: bunsetsu.length, intervalMs: 1100 });
+  const { accepted, accept } = useTermsConsent();
 
   const at = (offset: number) =>
     bunsetsu[(idx + offset + bunsetsu.length) % bunsetsu.length];
@@ -84,6 +87,13 @@ export default function Home() {
           <span className="px-1 opacity-30">·</span>
           <KeyCap>S</KeyCap>
           <span className="tracking-[0.12em]">睡眠</span>
+          <span className="px-2 opacity-30">·</span>
+          <Link
+            href="/terms"
+            className="font-roman text-[11px] tracking-[0.2em] text-cream/50 hover:text-cream/80"
+          >
+            利用規約
+          </Link>
         </div>
         <Link
           href="/library"
@@ -93,6 +103,7 @@ export default function Home() {
           <span className="font-roman text-base text-glow">→</span>
         </Link>
       </footer>
+      <TermsConsentModal open={accepted === false} onAccept={accept} />
     </div>
   );
 }
