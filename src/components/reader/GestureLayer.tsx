@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useDrag } from "@use-gesture/react";
 
-interface ReaderControlsProps {
+interface GestureLayerProps {
   onToggle: () => void;
   onNext: () => void;
   onPrev: () => void;
@@ -12,14 +12,14 @@ interface ReaderControlsProps {
   onOpenSettings: () => void;
 }
 
-export function ReaderControls({
+export function GestureLayer({
   onToggle,
   onNext,
   onPrev,
   onSpeedUp,
   onSpeedDown,
   onOpenSettings,
-}: ReaderControlsProps) {
+}: GestureLayerProps) {
   const handleTap = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const { clientX, currentTarget } = e;

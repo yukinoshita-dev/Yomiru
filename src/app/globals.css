@@ -7,6 +7,13 @@
   --color-bright:     #fbe7c2;
   --color-glow:       #e8a96a;
   --color-vermillion: #a8453a;
+  --color-coal:       #08080a;
+  --color-fog:        #d4d6db;
+  --color-snow:       #e8eaef;
+  --color-frost:      #f2f4f8;
+  --color-washi:      #f4ecd8;
+  --color-washi-soft: #f9f2df;
+  --color-sumi:       #1a1614;
 
   --font-mincho: var(--font-mincho-loaded), 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
   --font-jp:     var(--font-jp-loaded), 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
@@ -14,6 +21,8 @@
 
   --animate-andon-pulse:  andon-pulse 1.4s ease-in-out infinite;
   --animate-andon-reveal: andon-reveal 0.55s ease-out;
+  --animate-dark-reveal:  dark-reveal 0.5s ease-out;
+  --animate-light-reveal: light-reveal 0.55s ease-out;
 }
 
 @keyframes andon-pulse {
@@ -24,6 +33,16 @@
 @keyframes andon-reveal {
   0%   { opacity: 0; transform: translateY(8px); filter: blur(4px); }
   100% { opacity: 1; transform: translateY(0);   filter: blur(0);   }
+}
+
+@keyframes dark-reveal {
+  0%   { opacity: 0; transform: translateX(8px); filter: blur(2px); }
+  100% { opacity: 1; transform: translateX(0);   filter: blur(0);   }
+}
+
+@keyframes light-reveal {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0);   }
 }
 
 @utility writing-vrl {
@@ -39,4 +58,15 @@ html, body {
   margin: 0;
   background: var(--color-ink);
   color: var(--color-cream);
+}
+
+.with-ruby ruby {
+  ruby-position: over;
+}
+
+.with-ruby rt {
+  font-size: 0.36em;
+  line-height: 1;
+  letter-spacing: 0;
+  opacity: 0.72;
 }

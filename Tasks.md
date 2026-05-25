@@ -38,6 +38,8 @@
 - [x] T-034 ビルド修正（Google Fontsをnext/font化） — @import順序エラーとプリレンダー失敗を解消、Next.jsのフォント最適化に対応
 - [x] T-035 クライアント完結ページのSSR防御強化 — Dexie/localStorage依存ページに dynamic='force-dynamic' を付与、Next.js 15用 global-error.tsx を追加、DISABLE_PWA フラグを next.config.ts に追加（プリレンダー失敗の根本原因はnext-pwa側にありT-036で対応）
 - [x] T-036 @serwist/next 移行（next-pwa脱却） — @ducanh2912/next-pwa 10.2.9 と Next.js 15 のwebpack-runtime互換性問題を根本解決するため、@serwist/next にPWA基盤を移行
+- [x] T-037 リーダーデザイン刷新（3テーマ・実データ連携） — Lamp/Dark/Light の3デザインを設定Themeと連動し、ヘッダー（書籍情報・章）・スリム進捗バー・サイドレール（章番号・ETA・進捗％）・新しい底部コントロールバーを実装。既存のジェスチャー操作・睡眠モード・設定ドロワーは維持
+- [ ] T-038 しおり機能の追加 — Dexieに bookmarks テーブル追加、ヘッダー☆で現在位置の保存/解除、ライブラリページにしおり一覧導線、リーダー復帰時にしおり位置にジャンプ可能化
 
 ## コミットメッセージ運用
 

@@ -1,24 +1,39 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Toaster } from "sonner";
-import { ChunkStage } from "@/components/reader/ChunkStage";
-import { ProgressBar } from "@/components/reader/ProgressBar";
-import { ReaderControls } from "@/components/reader/ReaderControls";
+import { GestureLayer } from "@/components/reader/GestureLayer";
+import { ReaderControlBar } from "@/components/reader/ReaderControlBar";
+import { ReaderHeader } from "@/components/reader/ReaderHeader";
+import { ReaderProgressBar } from "@/components/reader/ReaderProgressBar";
+import { ReaderSideRails } from "@/components/reader/ReaderSideRails";
+import { ReaderStage } from "@/components/reader/ReaderStage";
+import { PaperGrain } from "@/components/reader/shared/PaperGrain";
 import { SettingsDrawer } from "@/components/reader/SettingsDrawer";
+import { getBookById } from "@/lib/db/repositories/books";
 import { getChunkAt, getChunksByBook } from "@/lib/db/repositories/chunks";
 import { getReadingState, upsertReadingState } from "@/lib/db/repositories/readingState";
+import { computeReadingMetrics, formatMs, toChapterKanji } from "@/lib/reader/eta";
 import { computeSleepRamp } from "@/lib/reader/sleepRamp";
+import { THEME_PALETTES } from "@/lib/reader/themePalette";
 import { useReaderStore } from "@/stores/readerStore";
 import { useSettingsStore } from "@/features/settings/store";
 import { useHydrateSettings } from "@/features/settings/useSettings";
 import { useReaderEngine } from "@/features/reader/useReaderEngine";
-import type { Chunk } from "@/types";
+import type { AppSettings, Book, Chunk } from "@/types";
 
 const CACHE_RADIUS = 3;
+
+interface VisibleChunks {
+  current?: Chunk;
+  prevPrev?: Chunk;
+  prev?: Chunk;
+  next?: Chunk;
+  nextNext?: Chunk;
+}
 
 export default function ReaderPage() {
   const params = useParams();
@@ -26,72 +41,171 @@ export default function ReaderPage() {
   const router = useRouter();
 
   useHydrateSettings();
-  const store = useReaderStore();
+  const {
+    index,
+    totalChunks,
+    status,
+    speed,
+    sleepStartAt,
+    load,
+    toggle,
+    next,
+    prev,
+    setSpeed,
+    startSleep,
+    endSleep,
+  } = useReaderStore();
   const settingsStore = useSettingsStore();
   const settings = settingsStore.settings;
   useReaderEngine();
 
-  const [chunk, setChunk] = useState<Chunk | undefined>();
+  const [book, setBook] = useState<Book | undefined>();
+  const [visibleChunks, setVisibleChunks] = useState<VisibleChunks>({});
   const [showSettings, setShowSettings] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
   const cacheRef = useRef<Map<number, Chunk>>(new Map());
 
-  // Load book on mount
+  const setVisibleFromCache = useCallback((currentIndex: number) => {
+    const cache = cacheRef.current;
+    setVisibleChunks({
+      current: cache.get(currentIndex),
+      prevPrev: cache.get(currentIndex - 2),
+      prev: cache.get(currentIndex - 1),
+      next: cache.get(currentIndex + 1),
+      nextNext: cache.get(currentIndex + 2),
+    });
+  }, []);
+
   useEffect(() => {
     if (!bookId) return;
+    let cancelled = false;
+
     (async () => {
-      const [state, chunks] = await Promise.all([
+      const [loadedBook, state, chunks] = await Promise.all([
+        getBookById(bookId),
         getReadingState(bookId),
         getChunksByBook(bookId),
       ]);
-      const startIndex = state?.currentIndex ?? 0;
-      store.load(bookId, startIndex, chunks.length);
+      if (cancelled) return;
 
-      // Pre-warm cache
+      const startIndex = state?.currentIndex ?? 0;
+      load(bookId, startIndex, chunks.length);
+      setBook(loadedBook);
+
       const cache = cacheRef.current;
       cache.clear();
-      for (const c of chunks.slice(0, CACHE_RADIUS * 2 + 1)) {
+      for (const c of chunks) {
         cache.set(c.index, c);
       }
+      setVisibleFromCache(startIndex);
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookId]);
 
-  // Fetch current chunk (with cache)
+    return () => {
+      cancelled = true;
+    };
+  }, [bookId, load, setVisibleFromCache]);
+
   useEffect(() => {
-    if (!bookId || store.index < 0) return;
-    const cached = cacheRef.current.get(store.index);
-    if (cached) {
-      setChunk(cached);
-    } else {
-      getChunkAt(bookId, store.index).then((c) => {
-        if (c) {
-          cacheRef.current.set(store.index, c);
-          setChunk(c);
-        }
-      });
-    }
+    if (!bookId || index < 0) return;
+    let cancelled = false;
 
-    // Pre-fetch neighbours
-    for (let i = store.index + 1; i <= store.index + CACHE_RADIUS; i++) {
-      if (!cacheRef.current.has(i)) {
-        getChunkAt(bookId, i).then((c) => { if (c) cacheRef.current.set(c.index, c); });
+    const ensureVisibleChunks = async () => {
+      const offsets = [-2, -1, 0, 1, 2];
+      await Promise.all(
+        offsets.map(async (offset) => {
+          const targetIndex = index + offset;
+          if (targetIndex < 0 || targetIndex >= totalChunks || cacheRef.current.has(targetIndex)) {
+            return;
+          }
+          const loadedChunk = await getChunkAt(bookId, targetIndex);
+          if (loadedChunk) {
+            cacheRef.current.set(loadedChunk.index, loadedChunk);
+          }
+        }),
+      );
+
+      for (let i = index + 3; i <= index + CACHE_RADIUS; i++) {
+        if (i >= totalChunks || cacheRef.current.has(i)) continue;
+        void getChunkAt(bookId, i).then((loadedChunk) => {
+          if (loadedChunk) cacheRef.current.set(loadedChunk.index, loadedChunk);
+        });
       }
-    }
-  }, [bookId, store.index]);
 
-  // Keyboard controls
+      if (!cancelled) {
+        setVisibleFromCache(index);
+      }
+    };
+
+    void ensureVisibleChunks();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bookId, index, totalChunks, setVisibleFromCache]);
+
+  useEffect(() => {
+    setSpeed(settings.displayDuration);
+  }, [settings.displayDuration, setSpeed]);
+
+  const sleepActive = settings.sleepMode && sleepStartAt !== null;
+
+  useEffect(() => {
+    if (!sleepActive) return;
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [sleepActive]);
+
+  const updateDisplayDuration = useCallback(
+    (duration: number) => {
+      const nextDuration = Math.min(10, Math.max(0.5, duration));
+      setSpeed(nextDuration);
+      settingsStore.update({ displayDuration: nextDuration });
+    },
+    [setSpeed, settingsStore],
+  );
+
+  const updateSettings = useCallback(
+    (patch: Partial<AppSettings>) => {
+      settingsStore.update(patch);
+      if (typeof patch.displayDuration === "number") {
+        setSpeed(patch.displayDuration);
+      }
+      if (typeof patch.sleepMode === "boolean") {
+        if (patch.sleepMode) startSleep();
+        else endSleep();
+      }
+    },
+    [endSleep, setSpeed, settingsStore, startSleep],
+  );
+
+  const closeReader = useCallback(() => {
+    void upsertReadingState({ bookId, currentIndex: index, lastReadAt: Date.now() }).finally(() => {
+      router.push("/library");
+    });
+  }, [bookId, index, router]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       switch (e.key) {
-        case " ": e.preventDefault(); store.toggle(); break;
-        case "ArrowRight": store.next(); break;
-        case "ArrowLeft": store.prev(); break;
-        case "ArrowUp": store.setSpeed(Math.max(0.5, store.speed - 0.5)); break;
-        case "ArrowDown": store.setSpeed(Math.min(10, store.speed + 0.5)); break;
+        case " ":
+          e.preventDefault();
+          toggle();
+          break;
+        case "ArrowRight":
+          next();
+          break;
+        case "ArrowLeft":
+          prev();
+          break;
+        case "ArrowUp":
+          updateDisplayDuration(speed - 0.5);
+          break;
+        case "ArrowDown":
+          updateDisplayDuration(speed + 0.5);
+          break;
         case "s": case "S":
-          if (settings.sleepMode && store.sleepStartAt === null) store.startSleep();
-          else store.endSleep();
-          settingsStore.update({ sleepMode: !settings.sleepMode });
+          updateSettings({ sleepMode: !settings.sleepMode });
           break;
         case "f": case "F":
           if (!document.fullscreenElement) document.documentElement.requestFullscreen();
@@ -99,51 +213,100 @@ export default function ReaderPage() {
           break;
         case "Escape":
           if (showSettings) setShowSettings(false);
-          else { void upsertReadingState({ bookId, currentIndex: store.index, lastReadAt: Date.now() }); router.push("/library"); }
+          else closeReader();
           break;
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [store, settings, settingsStore, showSettings, bookId, router]);
+  }, [closeReader, next, prev, settings.sleepMode, showSettings, speed, toggle, updateDisplayDuration, updateSettings]);
 
-  // Sleep overlay brightness
+  const palette = THEME_PALETTES[settings.theme];
+  const metrics = computeReadingMetrics({
+    index,
+    totalChunks,
+    displayDurationSec: speed,
+  });
+  const chapterKanji = toChapterKanji(visibleChunks.current?.chapterIndex);
+  const sleepRemainingLabel = sleepActive
+    ? formatMs(settings.sleepRampMinutes * 60_000 - (now - sleepStartAt))
+    : null;
   let brightness = 1;
-  if (settings.sleepMode && store.sleepStartAt !== null) {
+  if (sleepActive) {
     const ramp = computeSleepRamp({
-      elapsedMs: Date.now() - store.sleepStartAt,
+      elapsedMs: now - sleepStartAt,
       rampMinutes: settings.sleepRampMinutes,
-      baseDurationSec: settings.displayDuration,
+      baseDurationSec: speed,
     });
     brightness = ramp.brightness;
   }
 
   return (
-    <>
-      <Toaster position="top-center" theme="dark" />
-      <ChunkStage
-        chunk={chunk}
-        fadeMs={settings.fadeMs}
-        fontSize={settings.fontSize}
-        theme={settings.theme}
-      />
-      <ProgressBar current={store.index} total={store.totalChunks} />
+    <div className={`${palette.classes.root} relative flex min-h-screen flex-col overflow-hidden font-jp`}>
+      <Toaster position="top-center" theme={settings.theme === "light" ? "light" : "dark"} />
+      {settings.theme === "lamp" && <LampGlow />}
+      {settings.theme === "dark" && <DarkVignette />}
+      {settings.theme === "light" && <PaperGrain opacity={0.5} />}
 
-      {/* Sleep darkness overlay */}
-      {settings.sleepMode && store.sleepStartAt !== null && (
+      <ReaderHeader
+        book={book}
+        chapterKanji={chapterKanji}
+        palette={palette}
+        onClose={closeReader}
+        onOpenSettings={() => setShowSettings(true)}
+        onBookmark={() => {}}
+        bookmarked={false}
+      />
+      <ReaderProgressBar current={index} total={totalChunks} palette={palette} />
+
+      <main className="relative flex flex-1 items-center justify-center px-0 py-5">
+        {settings.theme === "dark" && <DarkCrosshair />}
+        <ReaderSideRails
+          side="left"
+          chapterKanji={chapterKanji}
+          index={index}
+          total={totalChunks}
+          palette={palette}
+        />
+        <ReaderStage
+          chunk={visibleChunks.current}
+          prevPrev={visibleChunks.prevPrev}
+          prev={visibleChunks.prev}
+          next={visibleChunks.next}
+          nextNext={visibleChunks.nextNext}
+          fadeMs={settings.fadeMs}
+          fontSize={settings.fontSize}
+          palette={palette}
+        />
+        <ReaderSideRails side="right" metrics={metrics} palette={palette} />
+      </main>
+
+      <ReaderControlBar
+        palette={palette}
+        playing={status === "playing"}
+        onToggle={toggle}
+        onNext={next}
+        onPrev={prev}
+        wpm={metrics.wpm}
+        sleepRemainingLabel={sleepRemainingLabel}
+        sleepActive={sleepActive}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      {sleepActive && (
         <div
-          className="fixed inset-0 bg-black pointer-events-none z-10"
+          className="pointer-events-none fixed inset-0 z-10 bg-black"
           style={{ opacity: 1 - brightness }}
         />
       )}
 
       {!showSettings && (
-        <ReaderControls
-          onToggle={() => store.toggle()}
-          onNext={() => store.next()}
-          onPrev={() => store.prev()}
-          onSpeedUp={() => store.setSpeed(Math.max(0.5, store.speed - 0.5))}
-          onSpeedDown={() => store.setSpeed(Math.min(10, store.speed + 0.5))}
+        <GestureLayer
+          onToggle={toggle}
+          onNext={next}
+          onPrev={prev}
+          onSpeedUp={() => updateDisplayDuration(speed - 0.5)}
+          onSpeedDown={() => updateDisplayDuration(speed + 0.5)}
           onOpenSettings={() => setShowSettings(true)}
         />
       )}
@@ -151,10 +314,43 @@ export default function ReaderPage() {
       {showSettings && (
         <SettingsDrawer
           settings={settings}
-          onUpdate={(patch) => settingsStore.update(patch)}
+          onUpdate={updateSettings}
           onClose={() => setShowSettings(false)}
         />
       )}
+    </div>
+  );
+}
+
+function LampGlow() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_700px_700px_at_50%_50%,rgba(232,169,106,0.22),rgba(232,169,106,0.06)_40%,transparent_70%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_240px_at_50%_50%,rgba(255,210,150,0.10),transparent_70%)]"
+      />
+    </>
+  );
+}
+
+function DarkVignette() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_50%_50%,transparent_0%,transparent_50%,rgba(0,0,0,0.45)_100%)]"
+    />
+  );
+}
+
+function DarkCrosshair() {
+  return (
+    <>
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-fog/[0.04]" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-fog/[0.04]" />
     </>
   );
 }
