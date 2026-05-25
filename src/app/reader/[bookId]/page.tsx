@@ -6,8 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Toaster } from "sonner";
 import { GestureLayer } from "@/components/reader/GestureLayer";
-import { ReaderControlBar } from "@/components/reader/ReaderControlBar";
 import { ReaderHeader } from "@/components/reader/ReaderHeader";
+import { ReaderHelp } from "@/components/reader/ReaderHelp";
 import { ReaderProgressBar } from "@/components/reader/ReaderProgressBar";
 import { ReaderSideRails } from "@/components/reader/ReaderSideRails";
 import { ReaderStage } from "@/components/reader/ReaderStage";
@@ -17,7 +17,7 @@ import { addBookmark, isBookmarked, removeBookmark } from "@/lib/db/repositories
 import { getBookById } from "@/lib/db/repositories/books";
 import { getChunkAt, getChunksByBook } from "@/lib/db/repositories/chunks";
 import { getReadingState, upsertReadingState } from "@/lib/db/repositories/readingState";
-import { computeReadingMetrics, formatMs, toChapterKanji } from "@/lib/reader/eta";
+import { toChapterKanji } from "@/lib/reader/eta";
 import { computeSleepRamp } from "@/lib/reader/sleepRamp";
 import { THEME_PALETTES } from "@/lib/reader/themePalette";
 import { useReaderStore } from "@/stores/readerStore";
@@ -47,7 +47,6 @@ export default function ReaderPage() {
   const {
     index,
     totalChunks,
-    status,
     speed,
     sleepStartAt,
     load,
@@ -254,15 +253,7 @@ export default function ReaderPage() {
   }, [closeReader, next, prev, settings.sleepMode, showSettings, speed, toggle, updateDisplayDuration, updateSettings]);
 
   const palette = THEME_PALETTES[settings.theme];
-  const metrics = computeReadingMetrics({
-    index,
-    totalChunks,
-    displayDurationSec: speed,
-  });
   const chapterKanji = toChapterKanji(visibleChunks.current?.chapterIndex);
-  const sleepRemainingLabel = sleepActive
-    ? formatMs(settings.sleepRampMinutes * 60_000 - (now - sleepStartAt))
-    : null;
   let brightness = 1;
   if (sleepActive) {
     const ramp = computeSleepRamp({
@@ -310,20 +301,7 @@ export default function ReaderPage() {
           fontSize={settings.fontSize}
           palette={palette}
         />
-        <ReaderSideRails side="right" metrics={metrics} palette={palette} />
       </main>
-
-      <ReaderControlBar
-        palette={palette}
-        playing={status === "playing"}
-        onToggle={toggle}
-        onNext={next}
-        onPrev={prev}
-        wpm={metrics.wpm}
-        sleepRemainingLabel={sleepRemainingLabel}
-        sleepActive={sleepActive}
-        onOpenSettings={() => setShowSettings(true)}
-      />
 
       {sleepActive && (
         <div
@@ -331,6 +309,8 @@ export default function ReaderPage() {
           style={{ opacity: 1 - brightness }}
         />
       )}
+
+      <ReaderHelp palette={palette} />
 
       {!showSettings && (
         <GestureLayer

@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { ReaderHelp } from "../ReaderHelp";
 import { ReaderStage } from "../ReaderStage";
 import { computeReadingMetrics, formatMs, toChapterKanji } from "@/lib/reader/eta";
 import { THEME_PALETTES } from "@/lib/reader/themePalette";
@@ -79,5 +80,27 @@ describe("ReaderStage", () => {
     expect(screen.getByText("遠い次")).toBeInTheDocument();
     expect(screen.getByText("先生")).toBeInTheDocument();
     expect(screen.getByText("せんせい")).toBeInTheDocument();
+  });
+});
+
+describe("ReaderHelp", () => {
+  it("toggles the operation help panel", () => {
+    render(<ReaderHelp palette={THEME_PALETTES.light} />);
+
+    expect(screen.queryByRole("dialog", { name: "操作ヘルプ" })).not.toBeInTheDocument();
+
+    const toggle = screen.getByRole("button", { name: "操作ヘルプを開く" });
+    fireEvent.click(toggle);
+
+    expect(screen.getByRole("dialog", { name: "操作ヘルプ" })).toBeInTheDocument();
+    expect(screen.getByText("再生 / 停止")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "操作ヘルプを閉じる" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "操作ヘルプを閉じる" }));
+
+    expect(screen.queryByRole("dialog", { name: "操作ヘルプ" })).not.toBeInTheDocument();
   });
 });
