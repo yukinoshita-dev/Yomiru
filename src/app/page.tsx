@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { TermsConsentModal } from '@/components/TermsConsentModal';
 import { KOKORO_BUNSETSU } from '@/data/bunsetsu';
